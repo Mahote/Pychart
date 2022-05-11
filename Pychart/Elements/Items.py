@@ -6,18 +6,16 @@ from gaphas.selection import Selection
 from gaphas.tool import hover_tool, item_tool, scroll_tool, view_focus_tool, zoom_tool
 
 class Box_State(Element):
-    def __init__(self, connections, width: float = 70, height: float = 70, name = '', parent_name = ''):
-        self.name = name
-        self.parent_name = parent_name
+    def __init__(self, connections, width: float = 70, height: float = 70, state = None, state_parent = None):
+        self.state = state
+        self.state_parent = state_parent
         self.connections = connections
         super().__init__(connections, width, height)
     def draw(self, context):
-        global r
-        r = True
         cr = context.cairo
         nw = self._handles[NW].pos
         cr.rectangle(nw.x,nw.y, self.width, self.height)
-        txt = text_align(cr, self.width/2, 10, self.name)
+        txt = text_align(cr, self.width/2, 10, self.state.name)
         if context.hovered:
             cr.set_source_rgba(0.8, 0.8, 1, 0.8)
         else:

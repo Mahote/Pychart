@@ -1,4 +1,3 @@
-from tokenize import String
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -12,13 +11,13 @@ class View(Gtk.Window):
         self._canvas = canvas
         self.set_title(self.title)
 
+
         self._box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL,6)
         self.add(self._box)
-        
+    
         self._buttonBox = Gtk.Box.new(Gtk.Orientation.VERTICAL,6)
         self._frame = Gtk.Frame()
         self._frame.add(self._buttonBox)
-
         self._box.add(self._frame)
         
         self._stateInteraction = Gtk.Label.new("State Interaction")
@@ -37,6 +36,9 @@ class View(Gtk.Window):
         scrolledWindow.set_hexpand(True)
         scrolledWindow.add(self._canvasview)
         self._box.add(scrolledWindow)
+        
+
+
         self.connect("destroy", Gtk.main_quit)
 
         self.show_all()

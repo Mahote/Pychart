@@ -2,7 +2,7 @@ import gi
 import random
 from sismic.model.elements import *
 from state_drawer import StateDrawer
-from sismic.io import import_from_yaml
+from sismic.io import import_from_yaml, export_to_plantuml
 from View import View
 from Elements.Items import Box_State
 gi.require_version('Gtk', '3.0')
@@ -13,9 +13,9 @@ from gaphas.tool import hover_tool,item_tool,scroll_tool,zoom_tool,view_focus_to
 class Controller():
     def __init__(self, view: View, statechart: Statechart):
         self.view = view
-        self.canvasview= self.view._canvasview
+        self.canvasview = self.view._canvasview
         self.statechart = statechart
-        self.canvas = self.view._canvas
+        self.rootState = self.statechart.state_for(self.statechart.root)
         self.canvasIntialisation()
         self.apply_default_tool_set(self.view._canvasview)
         self.view.connect('destroy', Gtk.main_quit)
@@ -23,54 +23,37 @@ class Controller():
         self.view._toChildButton.connect('clicked', self.childButton_Clicked)
         self.view.show_all()
     def canvasIntialisation(self):
-        childrens = self.statechart.children_for(self.statechart.root)
-        for childName in childrens:
-            state = self.statechart.state_for(childName)
-            state_drawer = StateDrawer(state, self.canvas)
-            #if isinstance(state, CompoundState):
-                #state_drawer.CallDrawer()
-            b = Box_State(self.canvas.connections,70,70,state.name,self.statechart.root)
-            x = random.randint(0, 200)
-            y = random.randint(0,200)
-            b.matrix.translate(x,y)
-            self.canvas.add(b)
+        childrens = self.statechart.children_for(self.rootState.name)
+        states = self.mappingState(childrens)
+        stateDrawer = StateDrawer(self.rootState, self.view._canvas)
+        stateDrawer.boxDrawer(states)
+        stateDrawer.transitionDrawer(states,self.statechart)
 
     def childButton_Clicked(self, _button):
         selection = self.canvasview.selection
         Box = selection.focused_item
-        state = self.statechart.state_for(Box.name)
-        print(state)
         if(isinstance(Box, Box_State)):
-            items = self.canvas.get_all_items()
-            childrens = self.statechart.children_for(Box.name)
-            print(childrens)
-            if(childrens != []):
-                for item in items:
-                    self.canvas.remove(item)
-                for child in childrens:
-                    b = Box_State(self.canvas.connections,70,70,child, Box.name)
-                    x = random.randint(0, 100)
-                    y = random.randint(0,100)
-                    b.matrix.translate(x,y)
-                    self.canvas.add(b)
+            drawer = StateDrawer(Box.state, self.view._canvas)
+            childrens = self.statechart.children_for(Box.state.name)
+            states = self.mappingState(childrens)
+            drawer.boxDrawer(states)
+            drawer.transitionDrawer(states, self.statechart)
     def parentButton_Clicked(self, _button):
-        selection = self.canvasview.selection
-        items = self.canvas.get_all_items()
+        selection = self.canvasview.selection 
         Box = selection.focused_item
-        state_parent = self.statechart.parent_for(Box.parent_name)
-        if Box.parent_name != self.statechart.root:
-            for item in items:
-                    self.canvas.remove(item)
-            for state in self.statechart.children_for(state_parent):
-                b = Box_State(self.canvas.connections,70,70,state, state_parent)
-                print('state in canvas :',state)
-                print('parent state', state_parent)
-                x = random.randint(0, 100)
-                y = random.randint(0,100)
-                b.matrix.translate(x,y)
-                self.canvas.add(b)
         
-
+        if(isinstance(Box, Box_State) and Box.state_parent.name != self.statechart.root):
+            stateParentName = self.statechart.parent_for(Box.state_parent.name)
+            drawer = StateDrawer(Box.state_parent, self.view._canvas)
+            childrens = self.statechart.children_for(stateParentName)
+            states = self.mappingState(childrens)
+            drawer.boxDrawer(states)
+            drawer.transitionDrawer(states,self.statechart)
+    def mappingState(self, stateNameList):
+        statesList = list()
+        for stateName in stateNameList:
+            statesList.append(self.statechart.state_for(stateName))
+        return statesList
 
     def apply_default_tool_set(self,view):
         view.remove_all_controllers()
@@ -82,6 +65,7 @@ class Controller():
 
 with open("../test.yaml") as f:
     statechart = import_from_yaml(f)
+    export_to_plantuml(statechart,"statechart")
 name = statechart.root
 c = Canvas()
 Controller(View(c,name),statechart)
