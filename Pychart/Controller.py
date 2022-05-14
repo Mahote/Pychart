@@ -14,6 +14,7 @@ class Controller():
     def __init__(self, view: View, statechart: Statechart):
         self.view = view
         self.canvasview = self.view._canvasview
+        self.canvas = self.view._canvas
         self.statechart = statechart
         self.rootState = self.statechart.state_for(self.statechart.root)
         self.canvasIntialisation()
@@ -25,7 +26,7 @@ class Controller():
     def canvasIntialisation(self):
         childrens = self.statechart.children_for(self.rootState.name)
         states = self.mappingState(childrens)
-        stateDrawer = StateDrawer(self.rootState, self.view._canvas)
+        stateDrawer = StateDrawer(self.rootState, self.canvas, self.canvasview)
         stateDrawer.boxDrawer(states)
         stateDrawer.transitionDrawer(states,self.statechart)
 
@@ -33,7 +34,7 @@ class Controller():
         selection = self.canvasview.selection
         Box = selection.focused_item
         if(isinstance(Box, Box_State)):
-            drawer = StateDrawer(Box.state, self.view._canvas)
+            drawer = StateDrawer(Box.state, self.canvas, self.canvasview)
             childrens = self.statechart.children_for(Box.state.name)
             states = self.mappingState(childrens)
             drawer.boxDrawer(states)
@@ -44,7 +45,7 @@ class Controller():
         
         if(isinstance(Box, Box_State) and Box.state_parent.name != self.statechart.root):
             stateParentName = self.statechart.parent_for(Box.state_parent.name)
-            drawer = StateDrawer(Box.state_parent, self.view._canvas)
+            drawer = StateDrawer(Box.state_parent, self.canvas, self.canvasview)
             childrens = self.statechart.children_for(stateParentName)
             states = self.mappingState(childrens)
             drawer.boxDrawer(states)
@@ -63,7 +64,7 @@ class Controller():
         view.add_controller(view_focus_tool(view))
         view.add_controller(hover_tool(view))
 
-with open("../test.yaml") as f:
+with open("../microwave.yaml") as f:
     statechart = import_from_yaml(f)
     export_to_plantuml(statechart,"statechart")
 name = statechart.root

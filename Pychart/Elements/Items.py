@@ -1,8 +1,12 @@
 
+from re import A
 from select import select
 from gaphas.item import NE,SE,SW,NW, Element, Line
 from gaphas.util import text_align
+from gaphas.connector import ItemConnector
 from gaphas.selection import Selection
+import random
+from gaphas.constraint import EqualsConstraint,constraint
 from gaphas.tool import hover_tool, item_tool, scroll_tool, view_focus_tool, zoom_tool
 
 class Box_State(Element):
@@ -22,7 +26,7 @@ class Box_State(Element):
             cr.set_source_rgba(1, 1, 1, 0.8)
         cr.set_source_rgb(0, 0, 0.8)
         cr.stroke()
-    def connection(self, Box_to_connect):
+    def transitionB2B(self, Box_to_connect):
         arrow = Arrow(self.connections)
         x = self.matrix.tuple()[4]
         y = self.matrix.tuple()[5]
@@ -30,11 +34,31 @@ class Box_State(Element):
         to_y = Box_to_connect.matrix.tuple()[5]
         arrow.head._set_pos((x+self.width,y))
         arrow.tail._set_pos((to_x,to_y))
+        #self.connections.connect_item(arrow, arrow.head,self, self.ports()[1])
+        #self.connections.connect_item(arrow, arrow.tail,Box_to_connect, Box_to_connect.ports()[0])
+        return arrow
+
+    def transition(self, in_or_out : bool):
+        #in = True out = False
+        arrow = Arrow(self.connections)
+        x = self.matrix.tuple()[4]
+        y = self.matrix.tuple()[5]
+        pos_x = random.randint(x,x+self.width)
+        if(in_or_out):
+            arrow.head._set_pos((pos_x,y+self.height))
+            arrow.tail._set_pos((pos_x,y+(self.height*2)))
+            arrow.connections.add_constraint(arrow,constraint(vertical=(arrow.head.pos,arrow.tail.pos)))
+
+        else:
+            arrow.tail._set_pos((pos_x,y+self.height))
+            arrow.head._set_pos((pos_x,y+(self.height*2)))
+            arrow.connections.add_constraint(arrow,constraint(vertical=(arrow.tail.pos,arrow.head.pos)))
         #self.connections.connect_item(arrow, arrow.head,self, self.ports()[1],)
         #self.connections.connect_item(arrow, arrow.tail,Box_to_connect, Box_to_connect.ports()[0])
         return arrow
 class Arrow(Line):
     def __init__(self, connections):
+        self.connections = connections
         self._line_width = 5
         self.fuzziness = 2
         super().__init__(connections)
