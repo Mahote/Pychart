@@ -29,29 +29,31 @@ class StateDrawer:
         itemsToConnect = self.canvas.get_all_items()
         liste = list(itemsToConnect)
         strlist = list()
-        for item in liste:
-            strlist.append(item.state.name)
-        for item1 in liste:
-            transitionsOUT= statechart.transitions_from(item1.state.name)
-            for transition in transitionsOUT:
-                for item2 in liste:  
-                    if(transition.source == item1.state.name and transition.target == item2.state.name):
-                        arrow = item1.transitionB2B(item2)
-                        self.canvas.add(arrow)
-                if(transition.source == item1.state.name and transition.target not in strlist):
-                    if(transition.target != None):
-                        print("transitionOUT : " , transition)
-                        arrow = Arrow(self.canvas.connections)
-                        arrow = item1.transition(False)
-                        self.canvas.add(arrow)
-            transitionsIN = statechart.transitions_to(item1.state.name)
-            for transition in transitionsIN:
-                if(transition.target == item1.state.name and transition.source not in strlist):
-                    if(transition.source != None):
-                        arrow = Arrow(self.canvas.connections)
-                        arrow = item1.transition(True)
-                        self.canvas.add(arrow)
-                        print("transitionIN : " , transition)
+        if len(statelist)>=1:
+            for item in liste:
+                strlist.append(item.state.name)
+            for item1 in liste:
+                transitionsOUT= statechart.transitions_from(item1.state.name)
+                for transition in transitionsOUT:
+                    for item2 in liste:  
+                        if(transition.source == item1.state.name and transition.target == item2.state.name):
+                            arrow = item1.transitionB2B(item2)
+                            print(transition)
+                            self.canvas.add(arrow)
+                    if(transition.source == item1.state.name and transition.target not in strlist):
+                        if(transition.target != None):
+                            print("transitionOUT : " , transition)
+                            arrow = Arrow(self.canvas.connections)
+                            arrow = item1.transition(False)
+                            self.canvas.add(arrow)
+                transitionsIN = statechart.transitions_to(item1.state.name)
+                for transition in transitionsIN:
+                    if(transition.target == item1.state.name and transition.source not in strlist):
+                        if(transition.source != None):
+                            arrow = Arrow(self.canvas.connections)
+                            arrow = item1.transition(True)
+                            self.canvas.add(arrow)
+                            print("transitionIN : " , transition)
                         
     def transitionExtern(self,listOfItems,statechart):
         res = list()

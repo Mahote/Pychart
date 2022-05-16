@@ -64,7 +64,7 @@ class Controller():
         view.add_controller(view_focus_tool(view))
         view.add_controller(hover_tool(view))
 
-with open("../microwave.yaml") as f:
+with open("../stopwatch.yaml") as f:
     statechart = import_from_yaml(f)
     export_to_plantuml(statechart,"statechart")
 name = statechart.root
