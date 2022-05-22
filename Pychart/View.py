@@ -26,11 +26,12 @@ class View(Gtk.Window):
 
         self._toChildButton = Gtk.Button.new_with_label("go to child")
         self._toParentButton = Gtk.Button.new_with_label("go to parent")
-        self._arrowInformationsButton = Gtk.Button.new_with_label("arrow informations")
+        self._saveBoxesPositions = Gtk.Button.new_with_label("save positions")
+
         
         self._buttonBox.add(self._toChildButton)
         self._buttonBox.add(self._toParentButton)
-        self._buttonBox.add(self._arrowInformationsButton)
+        self._buttonBox.add(self._saveBoxesPositions)
         self._canvasview.model = self._canvas
 
         scrolledWindow = Gtk.ScrolledWindow.new()
