@@ -26,8 +26,8 @@ class Box_State(Element):
             cr.set_source_rgba(1, 1, 1, 0.8)
         cr.set_source_rgb(0, 0, 0.8)
         cr.stroke()
-    def transitionB2B(self, Box_to_connect):
-        arrow = Arrow(self.connections)
+    def transitionB2B(self, Box_to_connect,transition,view):
+        arrow = Arrow(self.connections,transition,view)
         constraint_head = self.ports()[1].constraint(arrow,arrow.head,self)
         constraint_tail = Box_to_connect.ports()[1].constraint(arrow,arrow.tail,Box_to_connect)
         self.connections.connect_item(arrow, arrow.head,self, self.ports()[1], constraint=constraint_head)
@@ -42,9 +42,9 @@ class Box_State(Element):
         arrow.tail.pos.y = pos_y2
         return arrow
 
-    def transition(self, in_or_out : bool):
-        #in = True out = False
-        arrow = Arrow(self.connections)
+    def transition(self, in_or_out : bool,transition,view):
+        #out = True | in = False
+        arrow = Arrow(self.connections,transition,view)
         x = self.matrix.tuple()[4]
         y = self.matrix.tuple()[5]
         pos_x = random.randint(x,x+self.width)
@@ -66,14 +66,24 @@ class Box_State(Element):
             arrow.connections.add_constraint(arrow,constraint(vertical=(arrow.tail.pos,arrow.head.pos)))
         return arrow
 class Arrow(Line):
-    def __init__(self, connections):
+    def __init__(self, connections,transition,view):
+        self.view = view
+        self.transition = transition
         self.connections = connections
         self._line_width = 5
         self.fuzziness = 2
         super().__init__(connections)
     def draw(self, context):
         cr = context.cairo
-        
+        x = (self.head.pos.x + self.tail.pos.x)/2
+        y = (self.head.pos.y + self.tail.pos.y)/2
+        text = text_align(cr,x,y+10,self.transition.event,)
+        if(context.selected):
+            arrow_informations = self.view.arrow_informations
+            arrow_informations[0][1] = self.transition.event
+            arrow_informations[1][1] = self.transition.guard
+            arrow_informations[2][1] = self.transition.action
+
         return super().draw(context)
     def draw_tail(self, context):
         cr = context.cairo
