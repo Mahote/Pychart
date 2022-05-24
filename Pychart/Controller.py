@@ -7,7 +7,13 @@ from Elements.Items import Box_State
 from gi.repository import Gtk
 from gaphas import Canvas
 from gaphas.tool import hover_tool,item_tool,scroll_tool,zoom_tool,view_focus_tool
+"""
+A Controller is for connecting the view and the statecharts interactions 
+"""
 class Controller():
+    """
+    Contruct the Controller and attach events to the view
+    """
     def __init__(self, view: View, statechart, statechartpath : str):
         self.view = view
         self.statechart = statechart
@@ -24,6 +30,9 @@ class Controller():
         self.view._saveBoxesPositions.connect('clicked', self.saveButton_CLicked)
         self.view.show_all()
     def canvasIntialisation(self):
+        """
+            Initialisation of the canvas, by getting the childrens of the statachart root state
+        """
         childrens = self.statechart.children_for(self.rootState.name)
         states = self.mappingState(childrens)
         stateDrawer = StateDrawer(self.rootState, self.canvas, self.canvasview)
@@ -31,6 +40,9 @@ class Controller():
         stateDrawer.transitionDrawer(states,self.statechart,self.view)
 
     def childButton_Clicked(self, _button):
+        """
+            Draw the child of the box state selected (nothing if there is no childs)
+        """
         selection = self.canvasview.selection
         Box = selection.focused_item
         if(isinstance(Box, Box_State)):
@@ -42,10 +54,14 @@ class Controller():
             drawer.transitionDrawer(states, self.statechart,self.view)
     
     def parentButton_Clicked(self, _button):
+        """
+            Draw the parent of the box state selected (Nothing if the parent is the statechart root)
+        """
         selection = self.canvasview.selection 
         Box = selection.focused_item
         if(isinstance(Box, Box_State) and Box.state_parent.name != self.statechart.root):
             stateParentName = self.statechart.parent_for(Box.state_parent.name)
+            self.view.set_title(stateParentName)
             drawer = StateDrawer(Box.state_parent, self.canvas, self.canvasview)
             childrens = self.statechart.children_for(stateParentName)
             states = self.mappingState(childrens)
@@ -53,6 +69,9 @@ class Controller():
             drawer.transitionDrawer(states,self.statechart,self.view)
     
     def saveButton_CLicked(self, _button):
+        """
+            save the position of box states in the canvas into the statechart yaml"
+        """
         items = self.canvas.get_all_items()
         for item in items:
             if(isinstance(item,Box_State)):
@@ -66,12 +85,18 @@ class Controller():
         export_to_yaml(self.statechart, self.path)
     
     def mappingState(self, stateNameList):
+        """
+            Fonction to map a stateNameList to a stateList
+        """
         statesList = list()
         for stateName in stateNameList:
             statesList.append(self.statechart.state_for(stateName))
         return statesList
 
     def apply_default_tool_set(self,view):
+        """
+            Default tool from gaphas
+        """
         view.remove_all_controllers()
         view.add_controller(item_tool(view))
         view.add_controller(scroll_tool(view))
@@ -79,4 +104,7 @@ class Controller():
         view.add_controller(view_focus_tool(view))
         view.add_controller(hover_tool(view))
     def start(self):
+        """
+            start the Gtk application
+        """
         Gtk.main()

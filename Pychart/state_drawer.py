@@ -14,7 +14,7 @@ class StateDrawer:
         x = random.randint(0,200)
         y = random.randint(0,200)
         print(len(stateList))
-        if len(stateList)>=1:
+        if len(stateList)>0:
             self.cleanCanvas()
             for state in stateList:
                 x = random.randint(0,300)
@@ -30,7 +30,7 @@ class StateDrawer:
         itemsToConnect = self.canvas.get_all_items()
         liste = list(itemsToConnect)
         strlist = list()
-        if len(statelist)>=1:
+        if len(statelist)>0:
             for item in liste:
                 strlist.append(item.state.name)
             for item1 in liste:
