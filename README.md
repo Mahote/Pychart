@@ -56,7 +56,7 @@ When you have a correct yaml file you can now use pychart using the following co
 you need to be in the git repo of course  
 * python3 pychart.py [path to the yaml file]
 
-if you need all the thing above correctly you will have a window like that : 
+if you did all the thing above correctly you will have a window like this : 
 ![example img](doc/img/exampleREADME.png)
 
 to navigate through you statechart you need to select the state on which you want to see the child or the parent (if nothing happen then there is no child or you are already at the root state)
@@ -76,3 +76,5 @@ when you click on an arrow informations are displayed in the bottom of the windo
 ## Tools used for the development
 * gaphas : https://gaphas.readthedocs.io/en/stable/
 * Gtk (version 3.0): https://python-gtk-3-tutorial.readthedocs.io/en/latest/
+
+* sismic : https://sismic.readthedocs.io/en/latest/
