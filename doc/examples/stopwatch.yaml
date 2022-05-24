@@ -1,0 +1,42 @@
+statechart:
+  description: "A simple stopwatch which support \"start\", \"stop\", \"split\", and \"reset\".\nThese features are triggered respectively using \"start\", \"stop\", \"split\", and \"reset\".\n\nThe stopwatch expects a \"stopwatch\" object in its initial context.\nThis object should support the following methods: \"start\", \"stop\", \"split\", \"reset\", and \"unsplit\".\n"
+  name: Stopwatch
+  root state:
+    name: active
+    parallel states:
+    - initial: actual time
+      name: display
+      position: 333.0,189.0
+      states:
+      - name: lap time
+        position: 137.0,222.0
+        transitions:
+        - action: stopwatch.unsplit()
+          event: split
+          target: actual time
+      - name: actual time
+        position: 353.0,222.0
+        transitions:
+        - action: stopwatch.split()
+          event: split
+          target: lap time
+    - initial: stopped
+      name: timer
+      position: 169.0,189.0
+      states:
+      - name: stopped
+        position: 135.0,158.0
+        transitions:
+        - action: stopwatch.start()
+          event: start
+          target: running
+      - name: running
+        position: 342.0,157.0
+        transitions:
+        - action: stopwatch.stop()
+          event: stop
+          target: stopped
+      transitions:
+      - action: stopwatch.reset()
+        event: reset
+    position: None

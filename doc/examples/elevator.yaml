@@ -1,0 +1,56 @@
+statechart:
+  name: Elevator
+  preamble: "current = 0\ndestination = 0\ndoors_open = True\n"
+  root state:
+    name: active
+    parallel states:
+    - initial: floorSelecting
+      name: floorListener
+      position: 165.0,145.0
+      states:
+      - name: floorSelecting
+        position: 166.0,157.0
+        transitions:
+        - action: destination = event.floor
+          event: floorSelected
+          target: floorSelecting
+    - initial: doorsOpen
+      name: movingElevator
+      position: 373.0,160.0
+      states:
+      - name: moving
+        position: 97.0,311.0
+        states:
+        - name: movingDown
+          on entry: current = current - 1
+          position: 102.0,116.0
+          transitions:
+          - guard: destination < current
+            target: movingDown
+        - name: movingUp
+          on entry: current = current + 1
+          position: 272.0,128.0
+          transitions:
+          - guard: destination > current
+            target: movingUp
+        transitions:
+        - action: doors_open = True
+          guard: destination == current
+          target: doorsOpen
+      - name: doorsClosed
+        position: 207.0,141.0
+        transitions:
+        - guard: destination > current
+          target: movingUp
+        - guard: destination < current and destination >= 0
+          target: movingDown
+      - name: doorsOpen
+        position: 340.0,288.0
+        transitions:
+        - action: doors_open = False
+          guard: destination != current
+          target: doorsClosed
+        - action: "destination = 0\ndoors_open = False"
+          guard: after(10) and current > 0
+          target: doorsClosed
+    position: None

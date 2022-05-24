@@ -39,51 +39,10 @@ Now you can use the tool by cloning the depot : https://github.com/Mahote/Pychar
 
 **First you need to have a yaml file that past true the validation**
 
-here is an example of a valide statechart : 
-```yaml
-statechart:
-  description: "description"
-  name: Stopwatch
-  root state:
-    name: active
-    parallel states:
-    - initial: actual time
-      name: display
-      position: 333.0,189.0
-      states:
-      - name: lap time
-        position: 137.0,222.0
-        transitions:
-        - action: stopwatch.unsplit()
-          event: split
-          target: actual time
-      - name: actual time
-        position: 353.0,222.0
-        transitions:
-        - action: stopwatch.split()
-          event: split
-          target: lap time
-    - initial: stopped
-      name: timer
-      position: 169.0,189.0
-      states:
-      - name: stopped
-        position: 135.0,158.0
-        transitions:
-        - action: stopwatch.start()
-          event: start
-          target: running
-      - name: running
-        position: 342.0,157.0
-        transitions:
-        - action: stopwatch.stop()
-          event: stop
-          target: stopped
-      transitions:
-      - action: stopwatch.reset()
-        event: reset
-    position: None
-```
+here is examples of valide yaml statecharts :
+* [stopwatch example](doc/examples/stopwatch.yaml) 
+* [elevator example](doc/examples/elevator.yaml)
+
 for more information on the statechart validation you can check the sismic documentation here : https://sismic.readthedocs.io/en/latest/format.html.  
 The only thing that changes are the position in the yaml but there are optional.
 
