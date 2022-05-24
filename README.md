@@ -78,3 +78,7 @@ when you click on an arrow informations are displayed in the bottom of the windo
 * Gtk (version 3.0): https://python-gtk-3-tutorial.readthedocs.io/en/latest/
 
 * sismic : https://sismic.readthedocs.io/en/latest/
+
+## Credits
+
+* Giussepe Lipari researcher in the Cristal team in the University of Lille, who trust me for this project and helped me in various thing through the adventure.
