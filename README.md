@@ -52,7 +52,7 @@ you need to be in the git repo of course
 if you did all the thing above correctly, you will have a window like this : 
 ![example img](doc/img/exampleREADME.png)
 
-to navigate through your state chart you need to select the state on which you want to see the child or the parent (if nothing happen then there is no child or you are already at the root state)
+to navigate through your state chart you need to select the state on which you want to see the child or the parent (if nothing happen then there is no child, or you are already at the root state)
 
 selection example :   
 ![example selection](doc/img/selectionexample.png)
