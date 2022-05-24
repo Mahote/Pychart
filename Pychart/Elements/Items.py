@@ -11,11 +11,17 @@ from gaphas.tool import hover_tool, item_tool, scroll_tool, view_focus_tool, zoo
 
 class Box_State(Element):
     def __init__(self, connections, width: float = 70, height: float = 70, state = None, state_parent = None):
+        """
+            Constructor of the BoxState
+        """
         self.state = state
         self.state_parent = state_parent
         self.connections = connections
         super().__init__(connections, width, height)
     def draw(self, context):
+        """
+            Draw the box (rectangle) and set the title of it
+        """
         cr = context.cairo
         nw = self._handles[NW].pos
         cr.rectangle(nw.x,nw.y, self.width, self.height)
@@ -27,12 +33,19 @@ class Box_State(Element):
         cr.set_source_rgb(0, 0, 0.8)
         cr.stroke()
     def transitionB2B(self, Box_to_connect,transition,view):
+        """
+            get the arrow that represent the transition between two boxes to add it to the canvas
+        """
         arrow = Arrow(self.connections,transition,view)
+        #constraint to glue the arrow handles to the ports
         constraint_head = self.ports()[1].constraint(arrow,arrow.head,self)
         constraint_tail = Box_to_connect.ports()[1].constraint(arrow,arrow.tail,Box_to_connect)
+        #connect item together and attach the connexion to a constraint
         self.connections.connect_item(arrow, arrow.head,self, self.ports()[1], constraint=constraint_head)
         self.connections.connect_item(arrow, arrow.tail,Box_to_connect, Box_to_connect.ports()[1], constraint=constraint_tail)
         
+        #matrix from gaphas
+        #set the arrow position (head and tail)
         y1 = self.matrix.tuple()[5]
         pos_y1 = random.randint(y1,y1+self.height)
         arrow.head.pos.y = pos_y1
@@ -48,21 +61,26 @@ class Box_State(Element):
         x = self.matrix.tuple()[4]
         y = self.matrix.tuple()[5]
         pos_x = random.randint(x,x+self.width)
+        #lineport for connecting the items together
         lineport = LinePort(self.handles()[2].pos, self.handles()[3].pos)
         if(in_or_out):
+            #transition to a box outside the scope from a box inside the scope
+            #constraint to glue the head to the box
             constraint_head = lineport.constraint(arrow,arrow.head,self)
             self.connections.connect_item(arrow,arrow.head,self,lineport,constraint_head)
             arrow.head._set_pos((pos_x,y+self.height))
             arrow.tail._set_pos((pos_x,y+(self.height*2)))
+            #keep the arrow horizontal
             arrow.connections.add_constraint(arrow,constraint(vertical=(arrow.tail.pos,arrow.head.pos)))
             
         else:
+            #transition from a box outside the scope to a box inside the scope
+            #constraint to glue the tail to the box
             constraint_tail = lineport.constraint(arrow,arrow.tail,self)
             self.connections.connect_item(arrow,arrow.tail,self,lineport,constraint_tail)
-            
             arrow.tail._set_pos((pos_x,y+self.height))
             arrow.head._set_pos((pos_x,y+(self.height*2)))
-            
+            #keep the arrow horizontal
             arrow.connections.add_constraint(arrow,constraint(vertical=(arrow.tail.pos,arrow.head.pos)))
         return arrow
 class Arrow(Line):
@@ -75,10 +93,12 @@ class Arrow(Line):
         super().__init__(connections)
     def draw(self, context):
         cr = context.cairo
+        #draw the text in the middle of tha arrow
         x = (self.head.pos.x + self.tail.pos.x)/2
         y = (self.head.pos.y + self.tail.pos.y)/2
-        text = text_align(cr,x,y+10,self.transition.event,)
+        text = text_align(cr,x,y+10,self.transition.event)
         if(context.selected):
+            #fill the informations of the cell renderer for the arrow informations
             arrow_informations = self.view.arrow_informations
             arrow_informations[0][1] = self.transition.event
             arrow_informations[1][1] = self.transition.guard
@@ -86,6 +106,7 @@ class Arrow(Line):
 
         return super().draw(context)
     def draw_tail(self, context):
+        #draw the tail to hava an arrow shape
         cr = context.cairo
         cr.line_to(0,0)
         cr.line_to(10,10)

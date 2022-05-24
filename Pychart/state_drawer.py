@@ -6,10 +6,17 @@ from sismic.model import Statechart
 import random
 class StateDrawer:
     def __init__(self, state, canvas: Canvas, canvasView : GtkView):
+        """
+            Constructor for the StateDrawer
+        """
         self.state = state
         self.canvas = canvas
         self.canvasView = canvasView
     def boxDrawer(self, stateList : list):
+        """
+            Draw boxes in the canvas view from gaphas, if the state as a position in the yaml 
+            then the box is draw at this position else the position is choose randomly
+        """
         connections = self.canvas.connections
         x = random.randint(0,200)
         y = random.randint(0,200)
@@ -27,33 +34,43 @@ class StateDrawer:
                     b.matrix.translate(x,y)
                 self.canvas.add(b)
     def transitionDrawer(self, statelist : list, statechart : Statechart, view):
+        """
+            Draw the transition from a state to another state in or outside of the scope
+        """
         itemsToConnect = self.canvas.get_all_items()
-        liste = list(itemsToConnect)
-        strlist = list()
+        boxToConnect = list(itemsToConnect)
+        stateNameList = list()
         if len(statelist)>0:
-            for item in liste:
-                strlist.append(item.state.name)
-            for item1 in liste:
-                transitionsOUT= statechart.transitions_from(item1.state.name)
+            for item in boxToConnect:
+                stateNameList.append(item.state.name)
+            for box1 in boxToConnect:
+                #transition from the box1
+                transitionsOUT= statechart.transitions_from(box1.state.name)
                 for transition in transitionsOUT:
-                    
-                    for item2 in liste:  
-                        if(transition.source == item1.state.name and transition.target == item2.state.name):
-                            arrow = item1.transitionB2B(item2,transition,view)
+                    for box2 in boxToConnect:
+                        # We check if the box2 name is equal to the transition target 
+                        # then its a transition between two boces in the same scope
+                        # draw the arrow between the two boxes
+                        if(transition.source == box1.state.name and transition.target == box2.state.name):
+                            arrow = box1.transitionB2B(box2,transition,view)
                             self.canvas.add(arrow)
-                    
-                    if(transition.source == item1.state.name and transition.target not in strlist):
+                    if(transition.source == box1.state.name and transition.target not in stateNameList):
+                        # if the transition target is not in the scope we draw an arrow that point to nothing
                         if(transition.target != None):
-                            arrow = item1.transition(True,transition,view)
+                            arrow = box1.transition(True,transition,view)
                             self.canvas.add(arrow)
 
-                transitionsIN = statechart.transitions_to(item1.state.name)
+                transitionsIN = statechart.transitions_to(box1.state.name)
+                # transitions where the transition target is a box in boxToConnect
                 for transition in transitionsIN:
-                    if(transition.target == item1.state.name and transition.source not in strlist):
+                    # Draw the arrow if the transition is a transition from a box outside the scope to 
+                    # a box inside the scope
+                    if(transition.target == box1.state.name and transition.source not in stateNameList):
                         if(transition.source != None):
-                            arrow = item1.transition(False,transition,view)
+                            arrow = box1.transition(False,transition,view)
                             self.canvas.add(arrow)
     def cleanCanvas(self):
+        #Clear the canvas view
         items = self.canvas.get_all_items()
         for item in items:
             self.canvas.remove(item)
