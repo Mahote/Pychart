@@ -1,6 +1,41 @@
 # Pychart - Thomas Brunet - Interactive Visualization For Statechart
+## Introduction
 
-## How to use the tool
+Pychart is a university project, for the university of Lille.  
+
+### what is it about
+
+Sismic is a tool for statechart interpretation and visualisation but there is no tool where the visualisation is interactive, a statechart can have a lot of states all through different layers.
+
+the visualization can become really difficult if the number of states is really important
+
+this tool is to make the comprehension easier.
+
+### Goal
+
+the goal is to build a tool where you can navigate between the states, and see the transactions.
+
+to have a interactive visualization of the statechart
+### Current Status
+
+the project is at the very beginning of it (pre-alpha)
+there is all you can do like optimisation using layout algorithms
+
+## Install the tool
+
+* you need to have Gtk 3 (installed by default in ubuntu 20.04 LTS) but if its not use this command :
+**sudo apt-get install libgtk-3-dev**
+
+You need to install sismic and gaphas to do so use the following commands :
+* **You need to have python 3.8 at least**  
+before doing this update pip to the lastest version **/usr/bin/python3 -m pip install --upgrade pip** 
+* **pip install sismic**
+* **pip install gaphas**  
+Now you can use the tool by cloning the depot : https://github.com/Mahote/Pychart
+* python3 pychart.py [path to the yaml file]
+
+
+## How work the tool
 
 **First you need to have a yaml file that past true the validation**
 
